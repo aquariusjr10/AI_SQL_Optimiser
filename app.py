@@ -1,3 +1,5 @@
+import time
+
 import ollama
 import streamlit as st
 
@@ -27,17 +29,18 @@ if st.button("Optimize Query", type="primary", use_container_width=True):
         st.warning("Please enter a SQL query to optimize.")
     else:
         with st.spinner(f"Analyzing via {model_choice}..."):
+            # System prompt guiding the AI's behavior
             system_prompt = """
-            You are a senior database administrator. The user will provide a raw SQL query.
-            Analyze the query and provide:
-            1. **Bottlenecks:** Why is this query slow? (e.g., missing indexes, Cartesian products, full table scans).
+            You are a senior database optimization agent. The user will provide a raw SQL query.
+            Analyze the query and strictly provide the following sections:
+            1. **Bottlenecks:** Identify exactly why this query is slow.
             2. **Optimized Query:** Rewrite the query for maximum performance. Provide it in a markdown SQL block.
-            3. **Indexing Strategy:** What indexes should the team create to support this new query?
+            3. **Indexing Strategy:** What specific indexes should the engineering team create?
+            4. **Predicted Performance Impact:** Provide a concrete, estimated prediction of the impact.
 
             Keep the output concise, highly technical, and formatted beautifully in Markdown.
             """
 
-            # Define a generator function to yield streaming chunks from Ollama natively
             def stream_ollama_response():
                 try:
                     stream = ollama.chat(
@@ -49,12 +52,23 @@ if st.button("Optimize Query", type="primary", use_container_width=True):
                         stream=True,
                     )
                     for chunk in stream:
-                        # Yield the text chunk to Streamlit
                         yield chunk["message"]["content"]
                 except Exception as e:
-                    yield f"\n\n**Error connecting to Ollama:** {e}\n\nMake sure Ollama is running and you have downloaded `{model_choice}`."
+                    yield f"\n\n**Error connecting to Ollama:** {e}"
 
-            # Render the streaming output directly into a visually distinct container
+            # 1. Start the timer
+            start_time = time.perf_counter()
+
             st.subheader("Optimization Report")
             with st.container(border=True):
+                # This function blocks until the stream is completely finished
                 st.write_stream(stream_ollama_response())
+
+            # 2. Stop the timer
+            end_time = time.perf_counter()
+            execution_time = end_time - start_time
+
+            # 3. Display the result in a  banner
+            st.success(
+                f"Optimization generated in **{execution_time:.2f} seconds** running {model_choice} locally."
+            )
