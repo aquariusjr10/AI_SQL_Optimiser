@@ -16,7 +16,7 @@ This project solves both problems. It's an AI agent that runs 100% locally on yo
 We wanted the stack to be as fast as the queries it optimizes.
 * **Frontend:** Python via Streamlit (with custom CSS overrides for the UI).
 * **AI Engine:** Ollama running locally.
-* **Model:** `qwen2.5-coder` (specifically chosen for its deep understanding of SQL and execution plans).
+* **Model:** `qwen3-coder-next` (specifically chosen for its deep understanding of SQL and execution plans).
 * **Environment:** `uv` for lightning-fast dependency management.
 
 ## How to run it locally
@@ -25,18 +25,20 @@ You will need to have Ollama installed on your machine first to run the local mo
 
 1. **Pull the model:**
 ```bash
-   ollama pull qwen2.5-coder
-
+   ollama pull qwen3-coder-next
+```
 2. **Clone the repository:**
-git clone [https://github.com/YOUR_USERNAME/local-sql-optimizer.git](https://github.com/YOUR_USERNAME/local-sql-optimizer.git)
-   cd local-sql-optimizer
-
+```bash
+git clone https://github.com/aquariusjr10/AI_SQL_Optimiser.git
+cd local-sql-optimizer
+```
 3. **Run the app:**
+```bash
 uv run streamlit run app.py
-
+```
 The application will automatically open in your default browser at http://localhost:8501.
 
 
-## Team
+## Team Edgerunners
 * Kanishka S
 * Deepak Jeganathan
